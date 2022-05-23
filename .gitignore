@@ -1,0 +1,6 @@
+
+.secret
+build/
+node_modules/
+truffle-config.js
+test/.gitkeep
