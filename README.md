@@ -30,6 +30,15 @@ MOCK_NextMillionaire is a contract exactly the same as NextMillionair for testin
 1_init_migration.js is used for deployment on Rinkeby
 2_init_migration.js is used for deployment on Truffle test
 
-you can also find test case in folser test
+you can also find test case in folder test
+
+For deployment -- 
+npm install
+truffle deploy --network rinkeby 
+
+For testing---
+replace 1_initial_migration.json with 2_initial_migration.json
+truffle test
+
 
 
