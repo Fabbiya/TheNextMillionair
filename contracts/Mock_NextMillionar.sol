@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
+//This contract is for test purpose only... 
+//chainlink VRF random number hardcoded in the code
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./IrandomNumberGenerator.sol";
 
-contract NextMillionaire is Ownable {
+contract MOCK_NextMillionaire is Ownable {
     enum Status {
         Open, // The lottery is open for ticket purchases
         Completed // The lottery has been closed and the numbers drawn
@@ -31,13 +33,13 @@ contract NextMillionaire is Ownable {
     //store the random number generated from chainlink
     IRandomNumberGenerator internal randomGenerator_;
 
-    //--------------------------------------EVENTS-----------------------------
+    //----------------------------------EVENTS-----------------------------
     //Open New Round
     event NewRoundOpen(uint256 lotteryId);
     event Received(address, uint256);
     event PrizeSent(address, uint256);
 
-
+    //------------------------------CONSTRUCTOR----------------------------------
     constructor(uint256 _closingTimestamp) {
         lotteryIdCounter_ += 1;
         Status lotteryStatus;
@@ -140,15 +142,10 @@ contract NextMillionaire is Ownable {
     function lotteryWinner(uint256 round) external view returns (address) {
         return allLotteries_[round].winnerList;
     }
-    //create a random number 
-    function getRand() internal returns(uint256) {
-        //get random number from chainlink 
-        randomGenerator_ = IRandomNumberGenerator(
-            0x2aE395472B0cf014AFdd9791C198A43A4029821F
-        );
 
-        //get a random word from chainlink
-        uint256 rw = randomGenerator_.s_randomWords(0);
+    function getRand() internal view returns(uint256) {
+        
+        uint256 rw = 34480427320062457420864927216006904319934124299411792569154377552789426268675;
         uint256 rand = uint256(keccak256(abi.encodePacked(rw,block.timestamp,lotteryIdCounter_))) % (contributorCounter_ + 1);
         if(rand ==0){
             rw +=1 * 10**18;
@@ -157,18 +154,19 @@ contract NextMillionaire is Ownable {
         return rand;
     }
 
-    //return prize amount
     function lotterySize() external view returns(uint256){
         return address(this).balance;
     }
 
-    //return the round number
     function getRoundNo() external view returns(uint256){
         return lotteryIdCounter_;
     }
 
-    //return total number of contributors
     function getContributorsCount() external view returns(uint256){
         return contributorCounter_;
     } 
+
+    function closeRound(uint256 roundId) external onlyOwner() {
+        allLotteries_[roundId].closingTimestamp = block.timestamp;
+    }
 }

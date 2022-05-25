@@ -5,5 +5,6 @@ interface IRandomNumberGenerator{
     
     function requestRandomWords() external;
     function getRandomWord() external view returns(uint256);
+    function s_randomWords(uint256) external view returns(uint256);
 
 }

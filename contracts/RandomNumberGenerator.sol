@@ -3,9 +3,15 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract RandomNumberGenerator is VRFConsumerBaseV2 {
   VRFCoordinatorV2Interface COORDINATOR;
+
+  uint32 vrfCallbackGasLimit = 100000;
+  
+  uint32 vrfNumWords = 1;
+  uint256 vrfRequestId;
 
   // Your subscription ID.
   uint64 s_subscriptionId;
@@ -38,10 +44,16 @@ contract RandomNumberGenerator is VRFConsumerBaseV2 {
   uint256 public s_requestId;
   address s_owner;
 
-  constructor(uint64 subscriptionId) VRFConsumerBaseV2(vrfCoordinator) {
+  AggregatorV3Interface ethUsdPriceFeed;
+
+  constructor(address vrfCoordinatorAddress,bytes32 vrfKeyHash, uint64 vrfSubscriptionId,address priceFeedAddress) VRFConsumerBaseV2(vrfCoordinator) {
+    vrfCoordinator = vrfCoordinatorAddress;
+    keyHash = vrfKeyHash;
+    s_subscriptionId = vrfSubscriptionId;
+    ethUsdPriceFeed = AggregatorV3Interface(priceFeedAddress);
     COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
     s_owner = msg.sender;
-    s_subscriptionId = subscriptionId;
+    
   }
 
   // Assumes the subscription is funded sufficiently.
