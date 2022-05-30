@@ -52,7 +52,7 @@ describe("NextMillionaire", () => {
     //Getting current round number
     prevRoundId = await nextMillionaire.getRoundNo();
     //create new round
-    await nextMillionaire.newRound(1653542130);
+    await nextMillionaire.newRound(1653949841);
     //get round number to check if new round created
     roundId = await nextMillionaire.getRoundNo();
     console.log("roundId", roundId.toNumber());

@@ -16,7 +16,7 @@ contract NextMillionaire is Ownable {
         uint256 totalPrize; // The total amount of prize
         uint256 startingTimestamp; // Block timestamp for star of lottery
         uint256 closingTimestamp; // Block timestamp for end of entries
-        address winnerList;
+        address winner;
     }
     // Lottery ID's to info
     mapping(uint256 => Info) internal allLotteries_;
@@ -36,7 +36,6 @@ contract NextMillionaire is Ownable {
     event NewRoundOpen(uint256 lotteryId);
     event Received(address, uint256);
     event PrizeSent(address, uint256);
-
 
     constructor(uint256 _closingTimestamp) {
         lotteryIdCounter_ += 1;
@@ -68,6 +67,7 @@ contract NextMillionaire is Ownable {
             _closingTimestamp != 0 && _closingTimestamp > block.timestamp,
             "Invalid End time for lottery"
         );
+        require(allLotteries_[lotteryIdCounter_].lotteryStatus == Status.Completed, "Previous Lottery Winner is not drawn yet");
         // Incrementing lottery ID
         lotteryIdCounter_ += 1;
         lotteryId = lotteryIdCounter_;
@@ -125,7 +125,7 @@ contract NextMillionaire is Ownable {
         //get random number from chainlink from numbers for participates
         uint256 no = getRand();
         address winner = contributors_[no];
-        allLotteries_[lotteryIdCounter_].winnerList = winner;
+        allLotteries_[lotteryIdCounter_].winner = winner;
         allLotteries_[lotteryIdCounter_].lotteryStatus = Status.Completed;
         //reset contributors counter 
         contributorCounter_ = 0;
@@ -138,7 +138,7 @@ contract NextMillionaire is Ownable {
 
     //track of lottery winner
     function lotteryWinner(uint256 round) external view returns (address) {
-        return allLotteries_[round].winnerList;
+        return allLotteries_[round].winner;
     }
     //create a random number 
     function getRand() internal returns(uint256) {
